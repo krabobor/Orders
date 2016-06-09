@@ -1,0 +1,154 @@
+﻿@model w1.Models.Order
+@{
+    ViewBag.Title = "Заказ";
+}
+
+<body>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @{
+        var title = "";
+        if (Model.Id == 0)
+        {
+            title = "Новый заказ";
+        }
+        else
+        {
+            title = string.Format("Заказ №{0}", Model.Id);
+        }
+        <h4>@title</h4>
+            }
+
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.DeliveryDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.DeliveryDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.DeliveryDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Nomenclature, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.NomenclatureId, Model.GoodsList, new { @class = "DropDownList" })
+                    @Html.ValidationMessageFor(model => model.NomenclatureId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control", @type = "text" } })
+                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.Label("Итого", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBox("Amount", "", new { @class = "form-control", @readonly = "readonly" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Сomment, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Сomment, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Сomment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.IsClose, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.IsClose)
+                        @Html.ValidationMessageFor(model => model.IsClose, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Записать" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Назад", "Index")
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+            window.onload = function () {
+                calcAmount();
+            }
+            $('#Price').change(calcAmount);
+            $('#Quantity').change(calcAmount);
+            $('#Quantity').keydown(function () {
+                return (((event.keyCode > 47) && (event.keyCode < 58))) || event.keyCode == 46 || event.keyCode == 8 || (((event.keyCode > 95) && (event.keyCode < 106)))
+            });
+            $('#Price').keypress(function (obj) {
+                    obj = (obj) ? obj : window.obj
+                    var charCode = (obj.which) ? obj.which : obj.keyCode;
+                    var val = $('#Price').val();
+                    var pos = val.search(',');
+                    if (charCode == 44) {
+                        if (pos != -1) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                    if (charCode > 31 && (charCode < 48 || charCode > 57 )) {
+                        return false;
+                    }
+                    return true;
+                });
+            $.validator.methods.range = function (value, element, param) {
+                var globalizedValue = value.replace(",", ".");
+                return this.optional(element) || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+            }
+            $.validator.methods.number = function (value, element) {
+                return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+            }
+            function calcAmount() {
+                var price = parseFloat($('#Price').val().replace(",", "."));
+                var qty = parseFloat($('#Quantity').val().replace(",", "."));
+                var res = isNaN(qty * price) ? 0 : qty * price;
+                $('#Amount').val(res.toFixed(2));
+            }
+        </script>
+    }
+</body>

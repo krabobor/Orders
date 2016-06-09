@@ -1,0 +1,60 @@
+﻿@using w1.Models
+@model w1.Models.Nomenclature
+@{
+    ViewBag.Title = "Товар";
+}
+
+<body>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @{
+        var title = "";
+        if (Model.Id == 0)
+        {
+            title = "Новая номенклатура";
+        }
+        else
+        {
+            title = string.Format("Номенклатура (арт. №{0})", Model.Id);
+        }
+        <h4>@title</h4>
+            }
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Unit, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                   @* @Html.DropDownListFor(model => model.Unit, Enum.GetNames(typeof(Nomenclature.units)).Select(e => new SelectListItem { Text = e }), new { htmlAttributes = new { @class = "form-control" } })*@
+                    @Html.EnumDropDownListFor(model => model.Unit, new { @class = "DropDownList" })
+                    @Html.ValidationMessageFor(model => model.Unit, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Сохранить" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Назад", "Goods")
+    </div>
+</body>

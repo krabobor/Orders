@@ -1,0 +1,89 @@
+﻿@model IEnumerable<w1.Models.Order>
+@{
+    ViewBag.Title = "Заказы";
+}
+
+<body>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeliveryDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nomenclature)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsClose)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Сomment)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nomenclature.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsClose)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Сomment)
+            </td>
+            <td>
+                @{
+        if (item.IsClose)
+        {
+            @Html.ActionLink("Детали\t", "Details", new { id = item.Id })
+            ;
+
+            @Html.ActionLink("Сохранить", "DownloadXml", new { id = item.Id })
+            ;
+        }
+        else
+        {
+            @Html.ActionLink("Редактировать\t", "Edit", new { id = item.Id })
+            ;
+            @Html.ActionLink("Удалить", "Delete", new { id = item.Id })
+            ;
+        }
+                }
+            </td>
+        </tr>
+    }
+
+</table>
+<p>
+    @Html.ActionLink("Создать заказ", "Edit")
+</p>
+</body>
